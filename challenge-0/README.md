@@ -7,7 +7,7 @@ Welcome to your very first challenge! Your goal in this challenge is to create t
 If something is not working correctly, please do let your coach know!
 
 ## Before you start
-Make sure you follow the instructions in the main [README](../README.md) to set up your local development environment and install the necessary dependencies.
+Make sure you follow the instructions in the main [README](../README.md#local-environment-setup) to set up your local development environment and install the necessary dependencies.
 
 ## 1.1 Resource Deployment Guide
 The first step on this hackathon will be to create the resources we will use throughout the day. You can deploy using either the one-click button or manual method below.
@@ -24,13 +24,20 @@ Now, time to deploy our resources to Azure!
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmartaldsantos%2Fagentic-ai-hack%2Fmain%2Fchallenge-0%2Fiac%2Fazuredeploy.json)
 
+You should see a screen similar to this one:
+![init](assets/init_deployment.png)
+
 **Deployment Parameters:**
-- servicePrincipalObjectId: Leave this field empty.
-- resource group: Introduce the unique name for your resource group (example: rg-user01-yourinitials).
+- subscription: Select the subscription where you want to deploy the resources. It should be the default one you are using for this hackathon.
+- resource group: Introduce the unique name for your resource group (example: rg-yourinitials-ms-agentic-ai-hack).
+![rg](assets/rg.png)
+
+Once you have filled in the parameters, click on "Review + Create" and then "Create" to start the deployment.
 
 **NOTE:** Some parts of your deployment may fail if the resource provider `Microsoft.AlertsManagement` is not registered in your. Follow the [documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider-1) to register it and the re-run the deployment.
 
 Resource deployment can take up to 10 minutes, afterwards you'll be able to find most of the resources on your resource group. 
+
 
 ## 1.2 Verify the creation of your resources
 
