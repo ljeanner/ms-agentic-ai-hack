@@ -22,7 +22,7 @@ az login --use-device-code
 
 Now, time to deploy our resources to Azure!
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjeanner%2Fms-agentic-ai-hack%2Fmain%2Fchallenge-0%2Fiac%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fljeanner%2Fms-agentic-ai-hack%2Fmain%2Fchallenge-0%2Fiac%2Fazuredeploy.json)
 
 **Deployment Parameters:**
 - servicePrincipalObjectId: Leave this field empty.
