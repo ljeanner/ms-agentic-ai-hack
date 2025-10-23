@@ -30,7 +30,137 @@ fi
 
 # Get resource group deployments, find deployments starting with 'Microsoft.Template' and sort them by timestamp
 echo "Getting the deployments in '$resourceGroupName'..."
-deploymentName=$(az deployment group list --resource-group $resourceGroupName --query "[?contains(name, 'Microsoft.Template') || contains(name, 'azuredeploy')].{name:name}[0].name" --output tsv)
+deploymentName=$(az deployment group list --resource-group $resourceGroupName --query "[?contains(name, 'Microsoft.Template') || contains(name, 'azuredeploy')].name | [0]" --output tsv)#!/bin/bash
+#
+# This script will retrieve necessary keys and properties from Azure Resources 
+# deployed using "Deploy to Azure" button and will store them in a file named
+# ".env" in the parent directory.
+
+# Login to Azure
+if [ -z "$(az account show)" ]; then
+  echo "User not signed in Azure. Signin to Azure using 'az login' command."
+  az login --use-device-code
+fi
+
+# Get the resource group name from the script parameter named resource-group
+resourceGroupName=""
+
+# Parse named parameters
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --resource-group) resourceGroupName="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+# Check if resourceGroupName is provided
+if [ -z "$resourceGroupName" ]; then
+    echo "Enter the resource group name where the resources are deployed:"
+    read resourceGroupName
+fi
+
+# Get resource group deployments, find deployments starting with 'Microsoft.Template' and sort them by timestamp
+echo "Getting the deployments in '$resourceGroupName'..."
+# Fixed: Use simpler approach without complex JMESPath
+deploymentName=$(az deployment group list --resource-group $resourceGroupName --query "[].name" -o tsv | grep -E "(Microsoft\.Template|azuredeploy)" | head -1)
+
+# If no deployment found, get the most recent one
+if [ -z "$deploymentName" ]; then
+    echo "No specific deployment found, getting the most recent deployment..."
+    deploymentName=$(az deployment group list --resource-group $resourceGroupName --query "[0].name" -o tsv)
+fi
+
+# Check if any deployment was found
+if [ -z "$deploymentName" ]; then
+    echo "No deployments found in resource group '$resourceGroupName'"
+    echo "Available deployments:"
+    az deployment group list --resource-group $resourceGroupName --query "[].{Name:name, State:properties.provisioningState, Timestamp:properties.timestamp}" -o table
+    echo "Please enter the deployment name manually:"
+    read deploymentName
+    
+    if [ -z "$deploymentName" ]; then
+        echo "No deployment name provided. Exiting..."
+        exit 1
+    fi
+fi
+
+echo "Using deployment: $deploymentName"
+
+# Check if any deployment was found
+if [ -z "$deploymentName" ]; then
+    echo "No deployments found in resource group '$resourceGroupName'"
+    echo "Available deployments:"
+    az deployment group list --resource-group $resourceGroupName --query "[].{Name:name, State:properties.provisioningState, Timestamp:properties.timestamp}" -o table
+    echo "Please enter the deployment name manually:"
+    read deploymentName
+    
+    if [ -z "$deploymentName" ]; then
+        echo "No deployment name provided. Exiting..."
+        exit 1
+    fi
+fi
+
+echo "Using deployment: $deploymentName"
+
+# Get output parameters from last deployment using Azure CLI queries instead of jq
+echo "Getting the output parameters from the last deployment '$deploymentName' in '$resourceGroupName'..."
+
+# Extract the resource names directly using Azure CLI queries
+echo "Extracting the resource names from the deployment outputs..."
+storageAccountName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.storageAccountName.value" -o tsv 2>/dev/null || echo "")
+logAnalyticsWorkspaceName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.logAnalyticsWorkspaceName.value" -o tsv 2>/dev/null || echo "")
+if [ -z "$logAnalyticsWorkspaceName" ]; then
+    echo "No Log Analytics workspace found. Please enter the workspace name manually:"
+    read logAnalyticsWorkspaceName
+fi
+logAnalyticsWorkspaceId=$(az monitor log-analytics workspace show --resource-group $resourceGroupName --workspace-name $logAnalyticsWorkspaceName --query customerId -o tsv 2>/dev/null || echo "")
+searchServiceName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.searchServiceName.value" -o tsv 2>/dev/null || echo "")
+aiFoundryHubName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.aiFoundryHubName.value" -o tsv 2>/dev/null || echo "")
+aiFoundryProjectName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.aiFoundryProjectName.value" -o tsv 2>/dev/null || echo "")
+keyVaultName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.keyVaultName.value" -o tsv 2>/dev/null || echo "")
+containerRegistryName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.containerRegistryName.value" -o tsv 2>/dev/null || echo "")
+applicationInsightsName=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.applicationInsightsName.value" -o tsv 2>/dev/null || echo "")
+
+# Extract endpoint URLs
+searchServiceEndpoint=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.searchServiceEndpoint.value" -o tsv 2>/dev/null || echo "")
+aiFoundryHubEndpoint=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.aiFoundryHubEndpoint.value" -o tsv 2>/dev/null || echo "")
+aiFoundryProjectEndpoint=$(az deployment group show --resource-group $resourceGroupName --name $deploymentName --query "properties.outputs.aiFoundryProjectEndpoint.value" -o tsv 2>/dev/null || echo "")
+
+# If deployment outputs are empty, try to discover resources by type
+if [ -z "$storageAccountName" ] || [ -z "$logAnalyticsWorkspaceName" ] || [ -z "$keyVaultName" ] || [ -z "$containerRegistryName" ]; then
+    echo "Some deployment outputs not found, discovering missing resources by type..."
+    
+    if [ -z "$storageAccountName" ]; then
+        storageAccountName=$(az storage account list --resource-group $resourceGroupName --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$logAnalyticsWorkspaceName" ]; then
+        logAnalyticsWorkspaceName=$(az monitor log-analytics workspace list --resource-group $resourceGroupName --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$searchServiceName" ]; then
+        searchServiceName=$(az search service list --resource-group $resourceGroupName --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$aiFoundryHubName" ]; then
+        aiFoundryHubName=$(az cognitiveservices account list --resource-group $resourceGroupName --query "[?kind=='AIServices'].name | [0]" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$keyVaultName" ]; then
+        keyVaultName=$(az keyvault list --resource-group $resourceGroupName --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$containerRegistryName" ]; then
+        containerRegistryName=$(az acr list --resource-group $resourceGroupName --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$applicationInsightsName" ]; then
+        applicationInsightsName=$(az resource list --resource-group $resourceGroupName --resource-type "Microsoft.Insights/components" --query "[0].name" -o tsv 2>/dev/null || echo "")
+    fi
+fi
+
+# ...rest of the script remains the same...
 if [ $? -ne 0 ]; then
     echo "Error occurred while fetching deployments. Exiting..."
     exit 1

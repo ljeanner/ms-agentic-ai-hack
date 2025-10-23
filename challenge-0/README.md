@@ -43,10 +43,10 @@ Resource deployment can take up to 10 minutes, afterwards you'll be able to find
 
 Go back to your `Azure Portal` and find your `Resource Group`that should by now contain 9 resources and look like this:
 
-![alt text](image.png)
+![ressources](assets/ressources_created.png)
 
 ## 1.3 Let's retrieve the necessary keys
-After deploying the resources, you will need to configure the environment variables in the `.env` file. Double check you have logged in into your Azure account on the CLI. If that's settled, let's move into retrieving our keys. The `.env` file is a configuration file that contains the environment variables for the application. The `.env` file is automatically created by running the following command within the terminal in your Codespace.
+After deploying the resources, you will need to configure the environment variables in the `.env` file. Double check you have logged in into your Azure account on the CLI. If that's settled, let's move into retrieving our keys. The `.env` file is a configuration file that contains the environment variables for the application. The `.env` file is automatically created by running the following command within the terminal of vs code (to open a new terminal, use Ctrl + `).
 
 **Then run the get-keys script with your resource group name:**
 ```bash
