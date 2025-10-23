@@ -6,6 +6,8 @@ Welcome to your very first challenge! Your goal in this challenge is to create t
 
 If something is not working correctly, please do let your coach know!
 
+## Before you start
+Make sure you follow the instructions in the main [README](../README.md) to set up your local development environment and install the necessary dependencies.
 
 ## 1.1 Resource Deployment Guide
 The first step on this hackathon will be to create the resources we will use throughout the day. You can deploy using either the one-click button or manual method below.
@@ -20,7 +22,7 @@ az login --use-device-code
 
 Now, time to deploy our resources to Azure!
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmartaldsantos%2Fagentic-ai-hack%2Fmain%2Fchallenge-0%2Fiac%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjeanner%2Fms-agentic-ai-hack%2Fmain%2Fchallenge-0%2Fiac%2Fazuredeploy.json)
 
 **Deployment Parameters:**
 - servicePrincipalObjectId: Leave this field empty.
