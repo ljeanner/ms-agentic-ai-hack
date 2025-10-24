@@ -54,11 +54,25 @@ Before starting the workshop, ensure you have the following installed on your lo
 
 #### 1. Clone the Repository
 ```bash
-git clone ''
+git clone 'https://github.com/ljeanner/ms-agentic-ai-hack'
 cd agentic-ai-hack
 ```
 
 #### 2. Create a Python Virtual Environment
+
+##### Option A: Using VS Code (Recommended for Jupyter Notebooks)
+
+1. Open the project folder in VS Code
+2. Open any `.ipynb` file (e.g., `challenge-1/1.document-processing.ipynb`)
+3. When prompted to select a kernel, choose **"Create Virtual Environment..."**
+4. Select your preferred Python interpreter (Python 3.9+ recommended)
+5. VS Code will automatically:
+   - Create a virtual environment in the `venv` folder
+   - Install dependencies from `requirements.txt`
+   - Configure the environment for your Jupyter notebooks
+
+##### Option B: Using Command Line
+
 ```bash
 # Windows (PowerShell)
 python -m venv venv
@@ -73,7 +87,8 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-#### 3. Install Dependencies
+#### 3. Install Dependencies (if using Option B)
+
 ```bash
 # Install main requirements
 pip install -r requirements.txt
@@ -85,11 +100,13 @@ cd ..
 ```
 
 #### 4. Install Jupyter Notebook (for interactive challenges)
+
 ```bash
 pip install jupyter notebook ipykernel
 ```
 
 #### 5. Verify Installation
+
 ```bash
 # Test key Python packages
 python -c "import azure.ai.projects; print('Azure AI Projects installed successfully')"
@@ -98,7 +115,9 @@ python -c "import jupyter; print('Jupyter installed successfully')"
 ```
 
 ### Key Dependencies
+
 This workshop uses the following main packages:
+
 - **Azure AI Services**: `azure-ai-projects`, `azure-ai-agents`, `azure-ai-formrecognizer`, `azure-ai-evaluation`
 - **Azure Core**: `azure-identity`, `azure-cosmos`, `azure-search-documents`, `azure-storage-blob`
 - **AI/ML**: `semantic-kernel`, `openai`, `scikit-learn`, `pandas`, `numpy`
@@ -106,7 +125,9 @@ This workshop uses the following main packages:
 - **Web**: `aiohttp`, `httpx`, `websockets`
 
 ### Environment Configuration
+
 Before starting the challenges, you'll need to:
+
 1. Set up Azure resources (see Challenge 0)
 2. Configure environment variables for Azure services
 3. Obtain API keys and connection strings from Azure Portal
@@ -114,16 +135,19 @@ Before starting the challenges, you'll need to:
 ### Troubleshooting
 
 #### Common Issues
+
 - **Permission errors**: Run terminal as administrator (Windows) or use `sudo` (macOS/Linux)
 - **Python version issues**: Ensure you're using Python 3.9+
 - **Package conflicts**: Use a fresh virtual environment
 - **Azure authentication**: Ensure you're logged in to Azure CLI: `az login --use-device-code`
 
 #### Windows Specific
+
 - **PowerShell execution policy**: Run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` if you get script execution errors
 - **Long path issues**: Enable long paths in Windows if you encounter path length errors
 
 #### Virtual Environment Issues
+
 ```bash
 # If you need to recreate your virtual environment
 deactivate  # if currently activated
